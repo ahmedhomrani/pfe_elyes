@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'account',
     'technicien',
     'validateur',
-    'PMS',
     'lignes',
 
 ]
