@@ -12,13 +12,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     # These fields tie to the roles!
     ADMIN = 1
-    STAFF = 2
-    USER = 3
+    TECHNICIEN = 2
+    VALIDATEUR = 3
 
     ROLE_CHOICES = (
         (ADMIN, 'Admin'),
-        (STAFF, 'Staff'),
-        (USER, 'User')
+        (TECHNICIEN, 'Technicien'),
+        (VALIDATEUR, 'Validateur')
     )
     
     class Meta:
@@ -35,7 +35,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=True)
-    is_superuser = models.BooleanField(default=True)
+    is_superuser = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
     created_date = models.DateTimeField(default=timezone.now)
     modified_date = models.DateTimeField(default=timezone.now)

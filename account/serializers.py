@@ -28,24 +28,17 @@ class UserSerializers(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(max_length=128, write_only=True)
-    role = serializers.CharField(read_only=True)
+
 
     def validate(self, data):
-        email = data['email']
-        password = data['password']
-        user = authenticate(email=email, password=password)
+        email = data.get('email')
+        password = data.get('password')
 
-        if user is None:
-            raise serializers.ValidationError("Invalid login credentials")
+        # Return the validated email and password
+        return {'email': email, 'password': password}
+    
 
-        try:
-         
-            validation = {
-                'email': user.email,
-                "password": user.password,
-                'role': user.role,
-            }
+class PasswordChangeSerializer(serializers.Serializer):
+    old_password = serializers.CharField(max_length=128, write_only=True)
+    new_password = serializers.CharField(max_length=128, write_only=True)
 
-            return validation
-        except User.DoesNotExist:
-            raise serializers.ValidationError("Invalid login credentials")
