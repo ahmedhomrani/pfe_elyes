@@ -1,4 +1,4 @@
-from .serializers import UserSerializers, UserLoginSerializer
+from .serializers import UserSerializers, UserLoginSerializer, UserUpdateSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework import generics, permissions, status
@@ -7,7 +7,18 @@ from .serializers import UserSerializers, UserLoginSerializer, PasswordChangeSer
 from .models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template.loader import render_to_string
+from .serializers import UserSerializers, UserLoginSerializer, PasswordChangeSerializer, UserUpdateSerializer
+from rest_framework_simplejwt.views import TokenRefreshView
 
+
+from account import serializers
+
+
+class TokenRefreshAPIView(TokenRefreshView):
+    pass
 
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
@@ -19,6 +30,15 @@ class UserList(generics.ListCreateAPIView):
         if request.user.role != User.ADMIN:
             return Response({'message': 'Access forbidden'}, status=status.HTTP_403_FORBIDDEN)
         return super().list(request, *args, **kwargs)
+    
+    def perform_create(self, serializer):
+        user = serializer.save()
+
+        # Send simple email to the newly registered user
+        subject = 'Welcome to Our Platform!'
+        message = 'Thank you for registering with us. Your username is {}.'.format(user.username)
+        recipient_list = [user.email]
+        send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list)
 
 
 class AuthUserLoginView(APIView):
@@ -46,7 +66,7 @@ class AuthUserLoginView(APIView):
                 return Response(response, status=status.HTTP_200_OK)
             else:
                 # If authentication fails, return appropriate error message
-                return Response({'non_field_errors': ['Invalid login credentials']}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({'message': ['Invalid login credentials']}, status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
@@ -62,7 +82,7 @@ class ChangePasswordView(APIView):
             new_password = serializer.validated_data.get('new_password')
 
             if not user.check_password(old_password):
-                return Response({'non_field_errors': ['Old password is incorrect']}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'message': ['Old password is incorrect']}, status=status.HTTP_400_BAD_REQUEST)
 
             user.set_password(new_password)
             user.save()
@@ -71,4 +91,26 @@ class ChangePasswordView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        
+class UpdateUserView(generics.RetrieveUpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserUpdateSerializer  # Modified serializer
+    permission_classes = [permissions.IsAuthenticated & permissions.IsAdminUser]
+
+    def update(self, request, *args, **kwargs):
+        # Check if the requesting user has admin role
+        if not request.user.is_staff:
+            return Response({'message': 'Access forbidden'}, status=status.HTTP_403_FORBIDDEN)
+        return super().update(request, *args, **kwargs)
+    
+class DeactivateUserView(generics.DestroyAPIView):
+    queryset = User.objects.all()
+    permission_classes = [permissions.IsAuthenticated & permissions.IsAdminUser]
+
+    def destroy(self, request, *args, **kwargs):
+        # Check if the requesting user has admin role
+        if not request.user.is_staff:
+            return Response({'message': 'Access forbidden'}, status=status.HTTP_403_FORBIDDEN)
+        instance = self.get_object()
+        instance.is_active = False
+        instance.save()
+        return Response({'message': 'User deactivated successfully'}, status=status.HTTP_200_OK)

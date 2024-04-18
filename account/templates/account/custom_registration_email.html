@@ -1,0 +1,19 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome Email</title>
+</head>
+<body>
+    <p>Hello {{ user.first_name }},</p>
+    <p>Welcome to our platform!</p>
+    <p>Your account has been successfully created with the following credentials:</p>
+    <ul>
+        <li><strong>Email:</strong> {{ user.email }}</li>
+        <li><strong>Password:</strong> {{ user.password }}</li>
+        <li><strong>Role:</strong> {{ user.get_role_display }}</li>
+    </ul>
+    <p>Thank you for joining us!</p>
+</body>
+</html>
