@@ -1,3 +1,4 @@
+from account.permissions import IsAdminUser
 from .serializers import UserSerializers, UserLoginSerializer, UserUpdateSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
@@ -93,13 +94,10 @@ class ChangePasswordView(APIView):
 
 class UpdateUserView(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
-    serializer_class = UserUpdateSerializer  # Modified serializer
+    serializer_class = UserUpdateSerializer  
     permission_classes = [permissions.IsAuthenticated & permissions.IsAdminUser]
 
     def update(self, request, *args, **kwargs):
-        # Check if the requesting user has admin role
-        if not request.user.is_staff:
-            return Response({'message': 'Access forbidden'}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
     
 class DeactivateUserView(generics.DestroyAPIView):
@@ -114,3 +112,15 @@ class DeactivateUserView(generics.DestroyAPIView):
         instance.is_active = False
         instance.save()
         return Response({'message': 'User deactivated successfully'}, status=status.HTTP_200_OK)
+    
+class DeleteUserView(generics.DestroyAPIView):
+    queryset = User.objects.all()
+    permission_classes = [IsAdminUser]
+
+    def destroy(self, request, *args, **kwargs):
+        # Check if the requesting user has admin role
+        instance = self.get_object()
+        if instance.role == User.ADMIN:
+            return Response({'message': 'Access forbidden you cannot delete admin'}, status=status.HTTP_403_FORBIDDEN)
+        instance.delete_user()  # Call the delete_user method to permanently delete the user
+        return Response({'message': 'User deleted successfully'}, status=status.HTTP_200_OK)
