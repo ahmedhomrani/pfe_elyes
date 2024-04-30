@@ -3,7 +3,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from .models import LignesAssignto
 from .serializers import LignesAssigntoSerializer, LignesAssigntoCreateSerializer, LignesAssigntoUpdateSerializer
-from account.permissions import IsAdminUser  # Assuming permission class
+from account.permissions import IsAdminUser, IsTechnician  # Assuming permission class
 
 class LignesAssigntoListAPIView(generics.ListAPIView):
     queryset = LignesAssignto.objects.all()
@@ -31,7 +31,15 @@ class LignesAssigntoCreateAPIView(generics.CreateAPIView):
 class LignesAssigntoUpdateAPIView(generics.UpdateAPIView):
     queryset = LignesAssignto.objects.all()
     serializer_class = LignesAssigntoUpdateSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser, IsTechnician]
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
 
 class LignesAssigntoDestroyAPIView(generics.DestroyAPIView):
     queryset = LignesAssignto.objects.all()
