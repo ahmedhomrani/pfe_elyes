@@ -5,9 +5,9 @@ from lignes.models import Ligne  # Import settings module
 
 class LignesAssignto(models.Model):
     # ForeignKey to Ligne model
-    ligne = models.ForeignKey(Ligne, on_delete=models.CASCADE, related_name='assignments')
+    ligne = models.ForeignKey(Ligne, on_delete=models.CASCADE, related_name='lignes_assignments')
     # ForeignKey to User model (technician)
-    technician = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='assignments')
+    technician = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='technician_assignments')
     # Status field
     STATUS_CHOICES = (
         ('pending', 'Pending'),
@@ -19,6 +19,7 @@ class LignesAssignto(models.Model):
     realisation_date = models.DateField(null=True, blank=True)
     comment = models.TextField(blank=True) 
     affectation_date = models.DateField(auto_now_add=True)
+    confirmed = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.ligne.title} - {self.technician.email}"

@@ -22,4 +22,5 @@ urlpatterns = [
     path("lignes/", include('lignes.urls')),
     path("lignesAssignTo/", include('lignesAssignTo.urls')),
     path("technicien/", include('technicien.urls')),
+    path("validateur/", include('validateur.urls')),
 ]
