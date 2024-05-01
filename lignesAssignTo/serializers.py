@@ -8,7 +8,7 @@ class LignesAssigntoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LignesAssignto
-        fields = ['id', 'ligne', 'ligne_title', 'technician', 'technician_username', 'status', 'realisation_date', 'comment', 'affectation_date']
+        fields = ['id', 'ligne', 'ligne_title', 'technician', 'technician_username', 'status', 'realisation_date', 'comment', 'affectation_date','confirmed']
 
 class LignesAssigntoCreateSerializer(serializers.ModelSerializer):
     class Meta:
