@@ -8,12 +8,10 @@ from account.permissions import IsAdminUser, IsTechnician  # Assuming permission
 class LignesAssigntoListAPIView(generics.ListAPIView):
     queryset = LignesAssignto.objects.all()
     serializer_class = LignesAssigntoSerializer
-    permission_classes = [IsAdminUser]
 
 class LignesAssigntoRetrieveAPIView(generics.RetrieveAPIView):
     queryset = LignesAssignto.objects.all()
     serializer_class = LignesAssigntoSerializer
-    permission_classes = [IsAdminUser]
 
     def retrieve(self, request, *args, **kwargs):
         try:
@@ -26,12 +24,10 @@ class LignesAssigntoRetrieveAPIView(generics.RetrieveAPIView):
 class LignesAssigntoCreateAPIView(generics.CreateAPIView):
     queryset = LignesAssignto.objects.all()
     serializer_class = LignesAssigntoCreateSerializer
-    permission_classes = [IsAdminUser]
 
 class LignesAssigntoUpdateAPIView(generics.UpdateAPIView):
     queryset = LignesAssignto.objects.all()
     serializer_class = LignesAssigntoUpdateSerializer
-    permission_classes = [IsAdminUser, IsTechnician]
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
