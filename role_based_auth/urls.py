@@ -20,7 +20,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('account.urls')),
     path("lignes/", include('lignes.urls')),
-    path("lignesAssignTo/", include('lignesAssignTo.urls')),
-    path("technicien/", include('technicien.urls')),
-    path("validateur/", include('validateur.urls')),
+    #path("lignesAssignTo/", include('lignesAssignTo.urls')),
+    #path("technicien/", include('technicien.urls')),
+    #path("validateur/", include('validateur.urls')),
 ]
