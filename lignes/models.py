@@ -1,13 +1,20 @@
+import logging
 from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from account.models import User
 
 class Ligne(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('en_cours', 'En cours'),
+        ('completed', 'Completed'),
+    )
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=100)
     datecreation = models.DateTimeField(auto_now_add=True)
     sem = models.CharField(max_length=50,default="sem")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
     def __str__(self):
         return self.title
@@ -44,6 +51,9 @@ class Banc(models.Model):
     def __str__(self):
         return f"{self.ligne_test} - {self.banc_name}"
     
+
+logger = logging.getLogger(__name__)
+
 @receiver(post_save, sender=Banc)
 def increment_nbr_banc(sender, instance, created, **kwargs):
     if created:
@@ -56,3 +66,13 @@ def decrement_nbr_banc(sender, instance, **kwargs):
     test = instance.ligne_test.test
     test.nbr_banc = Banc.objects.filter(ligne_test__test=test).count()
     test.save()
+
+@receiver(post_save, sender=LigneTest)
+def update_ligne_status(sender, instance, created, **kwargs):
+    if created:
+        ligne = instance.ligne
+        logger.info(f"Created LigneTest for Ligne {ligne.id} with current status {ligne.status}")
+        if ligne.status == 'pending':
+            ligne.status = 'en_cours'
+            ligne.save()
+            logger.info(f"Updated Ligne {ligne.id} status to en_cours")

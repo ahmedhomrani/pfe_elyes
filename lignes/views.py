@@ -12,7 +12,6 @@ from .serializers import (
 # Ligne Views
 class LigneListCreateAPIView(generics.ListCreateAPIView):
     queryset = Ligne.objects.all()
-    serializer_class = LigneListSerializer
     permission_classes = [IsAdminUser]
 
     def get_serializer_class(self):
@@ -39,6 +38,16 @@ class LigneRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 # Test Views
 class TestListCreateAPIView(generics.ListCreateAPIView):

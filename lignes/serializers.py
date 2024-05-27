@@ -10,22 +10,22 @@ class LigneCreateSerializer(serializers.ModelSerializer):
 class LigneUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ligne
-        fields = ['id', 'title', 'sem']
+        fields = ['id', 'title', 'sem', 'status']
 
 class LigneRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ligne
-        fields = ['id', 'title', 'datecreation', 'sem']
+        fields = ['id', 'title', 'datecreation', 'sem', 'status']
 
 class LigneDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ligne
-        fields = ['id', 'title', 'datecreation', 'sem']
+        fields = ['id', 'title', 'datecreation', 'sem', 'status']
 
 class LigneListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ligne
-        fields = ['id', 'title', 'datecreation', 'sem']
+        fields = ['id', 'title', 'datecreation', 'sem', 'status']
 
 # Serializers for Test
 class TestCreateSerializer(serializers.ModelSerializer):
