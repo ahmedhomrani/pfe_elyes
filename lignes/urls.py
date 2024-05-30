@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import LigneListCreateAPIView, LigneRetrieveUpdateDestroyAPIView, TestListCreateAPIView, TestRetrieveUpdateDestroyAPIView
+from .views import BancsByLigneTestAPIView, LigneListCreateAPIView, LigneRetrieveUpdateDestroyAPIView, LigneTestsByLigneAPIView, LignesByTestAPIView, TestListCreateAPIView, TestRetrieveUpdateDestroyAPIView
 from .views import (
     BancListCreateAPIView, BancRetrieveUpdateDestroyAPIView, 
     LigneListCreateAPIView, LigneRetrieveUpdateDestroyAPIView, 
@@ -17,4 +17,7 @@ urlpatterns = [
     path('ligne-tests/<int:pk>/', LigneTestRetrieveUpdateDestroyAPIView.as_view(), name='ligne-test-detail'),
     path('bancs/', BancListCreateAPIView.as_view(), name='banc-list-create'),
     path('bancs/<int:pk>/', BancRetrieveUpdateDestroyAPIView.as_view(), name='banc-detail'),
+    path('ligne/<int:pk>/', LigneTestsByLigneAPIView.as_view(), name='ligne-tests-by-ligne'),
+    path('ligne-tests/test/<int:pk>/', LignesByTestAPIView.as_view(), name='ligne-tests-by-ligne'),
+    path('banc/ligne-tests/<int:pk>/', BancsByLigneTestAPIView.as_view(), name='bancs-by-ligne-test'),
 ]

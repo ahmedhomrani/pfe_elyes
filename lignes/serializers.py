@@ -26,6 +26,21 @@ class LigneListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ligne
         fields = ['id', 'title', 'datecreation', 'sem', 'status']
+class LigneForTestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LigneTest
+        fields = ['id', 'ligne', 'test', 'periodicity']
+class BancForLigneTestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Banc
+        fields = ['id', 'ligne_test', 'banc_name', 'validated_by_technician', 'validated_by_validator',
+                  'technician', 'validator', 'validation_date', 'revalidation_date', 'validator_visa', 'comment']
+
+class LigneTestForLigneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LigneTest
+        fields = ['id', 'ligne', 'test', 'periodicity']
+        
 
 # Serializers for Test
 class TestCreateSerializer(serializers.ModelSerializer):
@@ -72,14 +87,25 @@ class BancCreateSerializer(serializers.ModelSerializer):
             'ligne_test', 'banc_name', 'validated_by_technician', 'validated_by_validator',
             'technician', 'validator', 'validation_date', 'revalidation_date', 'validator_visa', 'comment'
         ]
-
+from .models import User
 class BancRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banc
-        fields = [
-            'id', 'ligne_test', 'banc_name', 'validated_by_technician', 'validated_by_validator',
-            'technician', 'validator', 'validation_date', 'revalidation_date', 'validator_visa', 'comment'
-        ]
+        fields = '__all__'
+
+    def update(self, instance, validated_data):
+        # Get the authenticated user from the request
+        user = self.context['request'].user
+
+        # Check if the user is a technician or validator
+        if user.role == User.TECHNICIEN:
+            instance.technician = user
+        elif user.role == User.VALIDATEUR:
+            instance.validator = user
+
+        # Perform the update
+        instance.save()
+        return instance
 
 class BancListSerializer(serializers.ModelSerializer):
     class Meta:

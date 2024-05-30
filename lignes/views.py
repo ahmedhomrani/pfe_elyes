@@ -3,16 +3,34 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 from .models import Ligne, Test, LigneTest, Banc
 from .serializers import (
-    LigneCreateSerializer, LigneUpdateSerializer, LigneRetrieveSerializer, LigneDetailSerializer, LigneListSerializer,
+    BancForLigneTestSerializer, LigneCreateSerializer, LigneForTestSerializer, LigneTestForLigneSerializer, LigneUpdateSerializer, LigneRetrieveSerializer, LigneDetailSerializer, LigneListSerializer,
     TestCreateSerializer, TestUpdateSerializer, TestRetrieveSerializer, TestListSerializer,
     LigneTestCreateSerializer, LigneTestRetrieveSerializer, LigneTestListSerializer,
     BancCreateSerializer, BancRetrieveSerializer, BancListSerializer
 )
 
 # Ligne Views
+class LigneTestsByLigneAPIView(generics.ListAPIView):
+    serializer_class = LigneTestForLigneSerializer
+
+    def get_queryset(self):
+        ligne_id = self.kwargs['pk']
+        return LigneTest.objects.filter(ligne_id=ligne_id)
+class BancsByLigneTestAPIView(generics.ListAPIView):
+    serializer_class = BancForLigneTestSerializer
+
+    def get_queryset(self):
+        ligne_test_id = self.kwargs['pk']
+        return Banc.objects.filter(ligne_test_id=ligne_test_id)
+class LignesByTestAPIView(generics.ListAPIView):
+    serializer_class = LigneForTestSerializer
+
+    def get_queryset(self):
+        test_id = self.kwargs['pk']
+        return LigneTest.objects.filter(test_id=test_id)    
+
 class LigneListCreateAPIView(generics.ListCreateAPIView):
     queryset = Ligne.objects.all()
-    permission_classes = [IsAdminUser]
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -53,7 +71,6 @@ class LigneRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 class TestListCreateAPIView(generics.ListCreateAPIView):
     queryset = Test.objects.all()
     serializer_class = TestListSerializer
-    permission_classes = [IsAdminUser]
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -84,7 +101,6 @@ class TestRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 class LigneTestListCreateAPIView(generics.ListCreateAPIView):
     queryset = LigneTest.objects.all()
     serializer_class = LigneTestListSerializer
-    permission_classes = [IsAdminUser]
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -101,7 +117,6 @@ class LigneTestListCreateAPIView(generics.ListCreateAPIView):
 class LigneTestRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = LigneTest.objects.all()
     serializer_class = LigneTestRetrieveSerializer
-    permission_classes = [IsAdminUser]
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -117,7 +132,6 @@ class LigneTestRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIVie
 class BancListCreateAPIView(generics.ListCreateAPIView):
     queryset = Banc.objects.all()
     serializer_class = BancListSerializer
-    permission_classes = [IsAdminUser]
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -134,7 +148,6 @@ class BancListCreateAPIView(generics.ListCreateAPIView):
 class BancRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Banc.objects.all()
     serializer_class = BancRetrieveSerializer
-    permission_classes = [IsAdminUser]
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
