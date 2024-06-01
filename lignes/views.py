@@ -153,7 +153,7 @@ class BancRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method == 'GET':
             return BancRetrieveSerializer
         return BancCreateSerializer
-    
+
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)

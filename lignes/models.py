@@ -37,6 +37,7 @@ class LigneTest(models.Model):
         return f"{self.ligne.title} - {self.test.name}"
     
 class Banc(models.Model):
+    test = models.ForeignKey(Test, on_delete=models.CASCADE,default=12)
     ligne_test = models.ForeignKey(LigneTest, related_name='bancs', on_delete=models.CASCADE)
     banc_name = models.CharField(max_length=100)
     validated_by_technician = models.BooleanField(default=False)

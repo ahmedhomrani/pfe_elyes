@@ -33,7 +33,7 @@ class LigneForTestSerializer(serializers.ModelSerializer):
 class BancForLigneTestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banc
-        fields = ['id', 'ligne_test', 'banc_name', 'validated_by_technician', 'validated_by_validator',
+        fields = ['id', 'ligne_test', 'test','banc_name', 'validated_by_technician', 'validated_by_validator',
                   'technician', 'validator', 'validation_date', 'revalidation_date', 'validator_visa', 'comment']
 
 class LigneTestForLigneSerializer(serializers.ModelSerializer):
@@ -84,26 +84,21 @@ class BancCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banc
         fields = [
-            'ligne_test', 'banc_name', 'validated_by_technician', 'validated_by_validator',
+            'ligne_test', 'test', 'banc_name', 'validated_by_technician', 'validated_by_validator',
             'technician', 'validator', 'validation_date', 'revalidation_date', 'validator_visa', 'comment'
         ]
-from .models import User
+
 class BancRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banc
         fields = '__all__'
 
     def update(self, instance, validated_data):
-        # Get the authenticated user from the request
         user = self.context['request'].user
-
-        # Check if the user is a technician or validator
         if user.role == User.TECHNICIEN:
             instance.technician = user
         elif user.role == User.VALIDATEUR:
             instance.validator = user
-
-        # Perform the update
         instance.save()
         return instance
 
@@ -111,6 +106,6 @@ class BancListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banc
         fields = [
-            'id', 'ligne_test', 'banc_name', 'validated_by_technician', 'validated_by_validator',
+            'id', 'ligne_test', 'test', 'banc_name', 'validated_by_technician', 'validated_by_validator',
             'technician', 'validator', 'validation_date', 'revalidation_date', 'validator_visa', 'comment'
         ]
