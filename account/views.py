@@ -1,4 +1,3 @@
-from account.permissions import IsAdminUser
 from .serializers import UserSerializers, UserLoginSerializer, UserUpdateSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
@@ -13,7 +12,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from .serializers import UserSerializers, UserLoginSerializer, PasswordChangeSerializer, UserUpdateSerializer
 from rest_framework_simplejwt.views import TokenRefreshView
-
+from rest_framework.permissions import IsAuthenticated
 
 from account import serializers
 
@@ -24,12 +23,9 @@ class TokenRefreshAPIView(TokenRefreshView):
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializers
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
-        # Check if the requesting user has admin role
-        if request.user.role != User.ADMIN:
-            return Response({'message': 'Access forbidden'}, status=status.HTTP_403_FORBIDDEN)
         return super().list(request, *args, **kwargs)
     
     def perform_create(self, serializer):
@@ -61,6 +57,7 @@ class AuthUserLoginView(APIView):
                     'message': 'User logged in successfully',
                     'email': email,
                     'role': user.role,
+                    'id':user.id,
                     'access_token': str(refresh.access_token),
                     'refresh_token': str(refresh)
                 }
@@ -115,7 +112,6 @@ class DeactivateUserView(generics.DestroyAPIView):
     
 class DeleteUserView(generics.DestroyAPIView):
     queryset = User.objects.all()
-    permission_classes = [IsAdminUser]
 
     def destroy(self, request, *args, **kwargs):
         # Check if the requesting user has admin role

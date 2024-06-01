@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.contrib.auth import password_validation
+from rest_framework import generics
 
 
 
@@ -68,3 +69,4 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.save()
         return instance
+    
