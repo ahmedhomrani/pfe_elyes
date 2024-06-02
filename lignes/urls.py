@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import BancsByLigneTestAPIView, LigneListCreateAPIView, LigneRetrieveUpdateDestroyAPIView, LigneTestsByLigneAPIView, LignesByTestAPIView, TestListCreateAPIView, TestRetrieveUpdateDestroyAPIView
+from .views import BancsByLigneTestAPIView, GeneratePDF, GeneratePDFLigne, LigneListCreateAPIView, LigneRetrieveUpdateDestroyAPIView, LigneTestsByLigneAPIView, LignesByTestAPIView, TestListCreateAPIView, TestRetrieveUpdateDestroyAPIView
 from .views import (
     BancListCreateAPIView, BancRetrieveUpdateDestroyAPIView, 
     LigneListCreateAPIView, LigneRetrieveUpdateDestroyAPIView, 
@@ -20,4 +20,6 @@ urlpatterns = [
     path('ligne/<int:pk>/', LigneTestsByLigneAPIView.as_view(), name='ligne-tests-by-ligne'),
     path('ligne-tests/test/<int:pk>/', LignesByTestAPIView.as_view(), name='ligne-tests-by-ligne'),
     path('banc/ligne-tests/<int:pk>/', BancsByLigneTestAPIView.as_view(), name='bancs-by-ligne-test'),
+    path('pdf', GeneratePDFLigne.as_view(), name='pdf'),
+    path('pdf/all', GeneratePDF.as_view(), name='pdf-all'),
 ]
